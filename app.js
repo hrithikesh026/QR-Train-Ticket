@@ -68,7 +68,7 @@
             }
             else{
                 if(data==null){ //Email does't exist
-                    response_text = 'Email Does\'t Exist. Please register first'
+                    response_text = 'Incorrect Email or Password'
                     res.status(400).send(response_text)
                 }
                 else{ //Email exists and checking is password matches
@@ -77,7 +77,7 @@
                         res.status(202).send(response_text)
                     }
                     else{
-                        response_text = 'Password Mismatched'
+                        response_text = 'Incorrect Email or Password'
                         res.status(400).send(response_text)
                     }
                 }
@@ -86,12 +86,13 @@
         // res.send(response_text)
     })
 
-    app.post('/gettrainlist',function await({body},res){
-        const source = body.source
-        const destination = body.destination
+    app.post('/gettrainlist',function await(req,res){
+        console.log(req.headers)
+        const source = req.body.source
+        const destination = req.body.destination
         //return list of trains between given two stations
         // console.log(trainlist.getTainList(source,destination))
-        trainlist.getTainList(source,destination,(err,result)=>{
+        trainlist.getTrainList(source,destination,(err,result)=>{
             if(err){
                 console.log('Error while fetching train list'+err)
                 res.status(500).send('Error while fetching train details'+err)
@@ -106,7 +107,7 @@
     })
 
     app.post('/buyticket',({body},res)=>{
-        
+
         mongo.add_tickets(body,(err,pass)=>{
             if(err){
                 res.status(500).send("Server Error")

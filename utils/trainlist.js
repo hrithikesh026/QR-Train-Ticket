@@ -34,7 +34,7 @@ const getTrainList =async (from, to,callback)=>{
                     
                     var validtrain = 0
                     if(train_detail.dy.charAt(d.getDay()) === '1' && train_detail.s === from){
-                        console.log(train_detail)
+                        // console.log(train_detail)
                         l = train_detail.dt.split(":");
                         var thours = parseInt(l[0])
                         var tminutes = parseInt(l[1])

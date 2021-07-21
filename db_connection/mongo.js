@@ -57,38 +57,42 @@ const add_user = (body,callback)=>{
 }
 
 const add_tickets = (body,callback)=>{
-    var doc = await users.findOne({email: data.email},'wallet_balance').exec()
-    if(doc.wallet_balance<body.price){
-        callback('Not Enought Balance',undefined)
-    }
-    else{
-        new_balance = doc.wallet_balance - body.price
-        var wallet_update = 0;
-        users.findOneAndUpdate({email: body.email},{wallet_balance: new_balance},{useFindAndModify:true},(err,doc)=>{
-            if(err){
-                callback('Enable to add ticket')
-            }
-            else{
-                const ticket = new tickets({
-                    email : body.email,
-                    from : body.source,
-                    to: body.destination,
-                    date: new Date(body.date),
-                    train_no: body.train_no,
-                    train_name: body.train_name,
-                    class: body.class,
-                    ticket_price: body.price
-                })
-                ticket.save().then(()=>{
-                callback(undefined,true)
-                }).catch((err)=>{
-                callback('Error During Transaction '+err,false)
-                })
-            }
-        })
-        
-        
-    }
+    users.findOne({email: data.email},'wallet_balance').then((doc)=>{
+        if(doc.wallet_balance<body.price){
+            callback('Not Enought Balance',undefined)
+        }
+        else{
+            new_balance = doc.wallet_balance - body.price
+            var wallet_update = 0;
+            users.findOneAndUpdate({email: body.email},{wallet_balance: new_balance},{useFindAndModify:true},(err,doc)=>{
+                if(err){
+                    callback('Enable to add ticket')
+                }
+                else{
+                    const ticket = new tickets({
+                        email : body.email,
+                        from : body.source,
+                        to: body.destination,
+                        date: new Date(body.date),
+                        train_no: body.train_no,
+                        train_name: body.train_name,
+                        class: body.class,
+                        ticket_price: body.price
+                    })
+                    ticket.save().then(()=>{
+                    callback(undefined,true)
+                    }).catch((err)=>{
+                    callback('Error During Transaction '+err,false)
+                    })
+                }
+            })
+            
+            
+        }
+    }).catch((err)=>{
+        callback(err)
+    })
+    
 }
 
 const fetch_tickets = (Email,callback)=>{
@@ -104,10 +108,10 @@ const fetch_tickets = (Email,callback)=>{
 }
 
 const recharge = async (data,callback)=>{
-    var doc = await users.findOne({email: data.email},'wallet_balance').exec()
-    var balance = doc.wallet_balance
-    balance = balance + data.amount
-    users.findOneAndUpdate({email: data.email},{wallet_balance: balance},{useFindAndModify:true},(err,doc)=>{
+    users.findOne({email: data.email},'wallet_balance').then((doc)=>{
+        var balance = doc.wallet_balance
+        balance = balance + data.amount
+        users.findOneAndUpdate({email: data.email},{wallet_balance: balance},{useFindAndModify:true},(err,doc)=>{
         if(err){
             callback('Error while updating wallet balance: '+err)
         }
@@ -115,6 +119,10 @@ const recharge = async (data,callback)=>{
             callback(undefined, doc)
         }
     })
+    }).catch((err)=>{
+        callback(err)
+    })
+    
 }
 
 module.exports={users,tickets,fetch_tickets,fetch_user,add_tickets,add_user,recharge}
