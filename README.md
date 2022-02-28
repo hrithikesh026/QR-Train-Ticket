@@ -2,6 +2,8 @@
 Android app to buy ticket by scanning QR at the railway station
 
 This is the Nodejs express server for backend.
+
+Android code is available here https://github.com/hrithikesh026/QR-Train-Ticket-Android-code
 ## Node Modules uses:
   Express.js
   
